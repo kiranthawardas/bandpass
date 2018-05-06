@@ -40,7 +40,6 @@ class App extends Component {
 		}
     }
     render() {
-		console.log("RENDERING")
         return (
 			<div className="App">
                 {/*Global Header*/}
@@ -372,7 +371,6 @@ class App extends Component {
     }
 
     displaySongs = () => {
-    console.log(numActive)
         if (!(this.state.playlistURL !== undefined && (localStorage.getItem('refreshToken') !== undefined && localStorage.getItem('refreshToken') !== null))) {
             return
         }
@@ -473,7 +471,6 @@ class App extends Component {
                 this.logOut();
             }
             let parsedBody = JSON.parse(body);
-            console.log(parsedBody);
             localStorage.setItem('refreshToken',parsedBody.RefreshToken);
             localStorage.setItem('userID',parsedBody.UserID);
             this.getPlaylists()
