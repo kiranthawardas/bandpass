@@ -1,0 +1,36 @@
+{
+  "homepage": "http://kiranthawardas.github.io/bandpass",
+  "name": "bandpass-front-end",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "1.0.17",
+    "bootstrap": "^4.0.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "font-awesome": "^4.7.0",
+    "lodash": "^4.17.5",
+    "nouislider": "^11.0.3",
+    "parse-url": "^3.0.2",
+    "rc-slider": "^8.6.1",
+    "react-input-range": "^1.3.0",
+    "react-nouislider": "^2.0.1",
+    "react-router-dom": "^4.2.2",
+    "request": "^2.83.0",
+    "simplebar": "^2.5.1",
+    "url": "^0.11.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "devDependencies": {
+    "gh-pages": "^1.1.0"
+  }
+}
