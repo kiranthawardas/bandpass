@@ -194,7 +194,7 @@ class App extends Component {
     displayPlaylistItems = () => {
         this.setState({playlistList:
             playlists.map((playlist) =>
-                <li onClick={() => this.setPlaylistURL(playlist.URL)} className="active playlist-item col-md-12" id={playlist.Name}>
+                <li onClick={() => this.setPlaylistURL(playlist.URL)} className="active playlist-item playlist-row col-md-12" id={playlist.Name}>
                     <div className="col-md-1"></div>
                     <h1 className="name col-md-3">{playlist.Name}</h1>
                     <h1 className="owner col-md-2">{playlist.OwnerId}</h1>
