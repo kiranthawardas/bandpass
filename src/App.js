@@ -21,7 +21,9 @@ let numActive;
 
 
 class App extends Component {
-
+    componentDidMount() {
+        document.title = "Bandpass"
+    }
     constructor(props) {
         super(props);
 		this.state = {
