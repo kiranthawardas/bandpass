@@ -6,8 +6,12 @@ var _ = require('lodash');
 const parseUrl = require('parse-url');
 var request = require('request')
 
-const authLink = "https://accounts.spotify.com/authorize/?client_id=359164955c5c4be3847d9f74674921a3&response_type=code&redirect_uri=https://kiranthawardas.github.io/bandpass&scope=playlist-read-private%20user-library-read%20playlist-modify-private%20playlist-modify-public&show_dialog=true"
-const apiURL = "https://v0slixnocd.execute-api.us-east-1.amazonaws.com/prod/bandpass"
+let authLink = "https://accounts.spotify.com/authorize/?client_id=359164955c5c4be3847d9f74674921a3&response_type=code&redirect_uri=https://kiranthawardas.github.io/bandpass&scope=playlist-read-private%20user-library-read%20playlist-modify-private%20playlist-modify-public&show_dialog=true"
+let apiURL = "https://v0slixnocd.execute-api.us-east-1.amazonaws.com/prod/bandpass"
+if (window.location.hostname === "localhost") {
+    apiURL = "http://localhost:12345/bandpass"
+    authLink = "https://accounts.spotify.com/authorize/?client_id=359164955c5c4be3847d9f74674921a3&response_type=code&redirect_uri=http://localhost:3000&scope=playlist-read-private%20user-library-read%20playlist-modify-private%20playlist-modify-public&show_dialog=true"
+}
 let userCode;
 let songs;
 let minTempoPlaylist;
@@ -46,7 +50,7 @@ class App extends Component {
                 {this.displayHeader()}
                 {this.displayConfirmPlaylist()}
                 {/*Start of Main App*/}
-                {this.displayLoginButton()}
+                {this.displayLoginScreen()}
                 <div className="App-body">
                     {/*Playlist Screen*/}
                     {this.displayPlaylists()}
@@ -69,13 +73,24 @@ class App extends Component {
 
 
     displayHeader = () => {
+        if (localStorage.getItem('refreshToken') === undefined ||
+            localStorage.getItem('refreshToken') === null) {
+                return (
+                    <header className="App-header">
+                        <h1 className="App-title noselect">bandpass</h1>
+                        <a href={authLink}>
+                            <button type="button" className="login-button btn btn-info">Log Into Spotify</button>
+                        </a>
+                    </header>
+                )
+        }
         if (localStorage.getItem('refreshToken') !== undefined && localStorage.getItem('refreshToken') !== null) {
             if (this.state.playlistURL !== undefined) {
                 return (
     	            <header className="App-header">
                         <h1 className="App-title noselect">bandpass</h1>
                         <div>
-                            <button onClick={() => this.getPlaylists(true)} type="button" class="reselect-playlist btn btn-info">Select Another Playlist</button>
+                            <button onClick={() => this.getPlaylists(true)} type="button" className="reselect-playlist btn btn-info">Select Another Playlist</button>
                         </div>
                         <div className="username">
                             {localStorage.getItem('userID')}&nbsp;<a className="log-out-text" onClick={() => this.logOut()}>(log out)</a>
@@ -102,19 +117,38 @@ class App extends Component {
         )
     }
 
-    displayLoginButton = () => {
-        if (localStorage.getItem('refreshToken') !== undefined &&
-            localStorage.getItem('refreshToken') !== null) {
-                return;
-            }
-        return (
-            <p className="App-intro">
-                <a href={authLink}>
-                    <button className="btn btn-primary button-login">log into Spotify</button>
-                </a>
-            </p>
-        )
+
+    displayLoginScreen = () => {
+        if (localStorage.getItem('refreshToken') === undefined ||
+            localStorage.getItem('refreshToken') === null) {
+            return (
+                <div className="welcome-screen">
+                    <h1><b>Filter your spotify playlists</b></h1>
+                    <h3>Log into spotify and select an existing playlist</h3>
+                    <h3>
+                        Filter your songs using the
+                        &nbsp;
+                        <button className="btn btn-success">
+                            <i className="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        &nbsp;
+                        <button className="btn btn-danger">
+                            <i className="fa fa-minus" aria-hidden="true"></i>
+                        </button>
+                        &nbsp;
+                        buttons
+                    </h3>
+                    <h3>
+                        Press the
+                        &nbsp;
+                        <button className="btn btn-primary submit-button"><p>Submit</p></button>
+                        &nbsp;
+                        button to make a new playlist
+                    </h3>
+                </div>
+            )
     }
+}
 
     displayPlaylists = () => {
         if (this.state.playlistURL !== undefined || localStorage.getItem('refreshToken') === undefined || localStorage.getItem('refreshToken') === null) {
@@ -122,15 +156,15 @@ class App extends Component {
         }
         return (
             <div>
-                <ul class="playlist-items">
+                <ul className="playlist-items">
                     <li className="title-item active playlist-item col-md-12">
-                        <div class="col-md-1"></div>
-                        <h1 class="name col-md-3" onClick={() => this.sortPlaylists("Name")}>Playlist Name <i class="fa fa-sort" aria-hidden="true"></i></h1>
-                        <h1 class="owner col-md-2" onClick={() => this.sortPlaylists("OwnerId")}>Playlist Owner <i class="fa fa-sort" aria-hidden="true"></i></h1>
-                        <h1 class="public col-md-2" onClick={() => this.sortPlaylists("Public")}>Permissions <i class="fa fa-sort" aria-hidden="true"></i></h1>
-                        <h1 class="count col-md-2" onClick={() => this.sortPlaylists("TrackCount")}>Track Count <i class="fa fa-sort" aria-hidden="true"></i></h1>
-                        <h1 class="link col-md-1">Link</h1>
-                        <div class="col-md-1"></div>
+                        <div className="col-md-1"></div>
+                        <h1 className="name col-md-3" onClick={() => this.sortPlaylists("Name")}>Playlist Name <i className="fa fa-sort" aria-hidden="true"></i></h1>
+                        <h1 className="owner col-md-2" onClick={() => this.sortPlaylists("OwnerId")}>Playlist Owner <i className="fa fa-sort" aria-hidden="true"></i></h1>
+                        <h1 className="public col-md-2" onClick={() => this.sortPlaylists("Public")}>Permissions <i className="fa fa-sort" aria-hidden="true"></i></h1>
+                        <h1 className="count col-md-2" onClick={() => this.sortPlaylists("TrackCount")}>Track Count <i className="fa fa-sort" aria-hidden="true"></i></h1>
+                        <h1 className="link col-md-1">Link</h1>
+                        <div className="col-md-1"></div>
                     </li>
                     {this.state.playlistList}
                 </ul>
@@ -147,9 +181,9 @@ class App extends Component {
         }
         else {
             return (
-                <div id="playlist-error" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div id="playlist-error" className="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Error!</strong> This playlist is not available right now.
-                    <button onClick={() => this.closePlaylistError()} type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <button onClick={() => this.closePlaylistError()} type="button" className="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -161,17 +195,17 @@ class App extends Component {
         this.setState({playlistList:
             playlists.map((playlist) =>
                 <li onClick={() => this.setPlaylistURL(playlist.URL)} className="active playlist-item col-md-12" id={playlist.Name}>
-                    <div class="col-md-1"></div>
-                    <h1 class="name col-md-3">{playlist.Name}</h1>
-                    <h1 class="owner col-md-2">{playlist.OwnerId}</h1>
-                    <h1 class="public col-md-2">{playlist.Public}</h1>
-                    <h1 class="count col-md-2">{playlist.TrackCount}</h1>
-                    <h1 class="link col-md-1">
+                    <div className="col-md-1"></div>
+                    <h1 className="name col-md-3">{playlist.Name}</h1>
+                    <h1 className="owner col-md-2">{playlist.OwnerId}</h1>
+                    <h1 className="public col-md-2">{playlist.Public}</h1>
+                    <h1 className="count col-md-2">{playlist.TrackCount}</h1>
+                    <h1 className="link col-md-1">
                         <a href={playlist.URL} target="_none" onClick={e => e.stopPropagation()}>
-                            <i class="fa fa-link" aria-hidden="true"></i>
+                            <i className="fa fa-link" aria-hidden="true"></i>
                         </a>
                     </h1>
-                    <div class="col-md-1"></div>
+                    <div className="col-md-1"></div>
                 </li>
               )
         })
@@ -183,14 +217,14 @@ class App extends Component {
         }
         return (
             <div>
-                <div class="input-group mb-3 playlist-input col-md-6">
+                <div className="input-group mb-3 playlist-input col-md-6">
 
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">New Playlist Name</span>
+                    <div className="input-group-prepend">
+                        <span className="input-group-text">New Playlist Name</span>
                     </div>
-                    <input id="new-playlist-input" type="text" class="form-control" aria-label="New Playlist Name"></input>
+                    <input id="new-playlist-input" type="text" className="form-control" aria-label="New Playlist Name"></input>
 
-                    <button onClick={() => this.newPlaylist()} class="input-group-append btn btn-primary submit-button">Submit</button>
+                    <button onClick={() => this.newPlaylist()} className="input-group-append btn btn-primary submit-button">Submit</button>
                 </div>
             </div>
         )
@@ -214,12 +248,12 @@ class App extends Component {
             <div className="slider-wrapper">
                 <div className="slider-wrapper-top">
                     <h1>Tempo</h1>
-                    <button onClick={() => this.filterTempo("in")} type="button" class="btn btn-success">
-                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    <button onClick={() => this.filterTempo("in")} type="button" className="btn btn-success">
+                        <i className="fa fa-plus" aria-hidden="true"></i>
                     </button>
                     &nbsp;
-                    <button onClick={() => this.filterTempo("out")}type="button" class="btn btn-danger">
-                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    <button onClick={() => this.filterTempo("out")}type="button" className="btn btn-danger">
+                        <i className="fa fa-minus" aria-hidden="true"></i>
                     </button>
                 </div>
                 <div className="slider">
@@ -240,12 +274,12 @@ class App extends Component {
             <div className="slider-wrapper">
                 <div className="slider-wrapper-top">
                     <h1>Energy</h1>
-                    <button onClick={() => this.filterEnergy("in")} type="button" class="btn btn-success">
-                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    <button onClick={() => this.filterEnergy("in")} type="button" className="btn btn-success">
+                        <i className="fa fa-plus" aria-hidden="true"></i>
                     </button>
                     &nbsp;
-                    <button onClick={() => this.filterEnergy("out")}type="button" class="btn btn-danger">
-                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    <button onClick={() => this.filterEnergy("out")}type="button" className="btn btn-danger">
+                        <i className="fa fa-minus" aria-hidden="true"></i>
                     </button>
                 </div>
                 <div className="slider">
@@ -265,9 +299,9 @@ class App extends Component {
     displaySelectAllNoneFilter = () => {
         return (
             <div className="select-all-none">
-                <button onClick={() => this.selectAllNone(true)} type="button" class="btn btn-info">Select All</button>
+                <button onClick={() => this.selectAllNone(true)} type="button" className="btn btn-info">Select All</button>
                 <br></br>
-                <button onClick={() => this.selectAllNone(false)} type="button" class="btn btn-info">Deselect All</button>
+                <button onClick={() => this.selectAllNone(false)} type="button" className="btn btn-info">Deselect All</button>
             </div>
         )
     }
@@ -277,50 +311,50 @@ class App extends Component {
 		this.setState({songList:
             Object.keys(songs).map(key =>
                 <li className={songs[key].Active ? 'active song-item col-md-12' : 'inactive song-item col-md-12'} id={key}>
-                    <div class="active-col">
+                    <div className="active-col">
                         <a href={songs[key].Uri} target="_none" onClick={e => e.stopPropagation()}>
-                            <i class="fa fa-link" aria-hidden="true"></i>
+                            <i className="fa fa-link" aria-hidden="true"></i>
                         </a>
                     </div>
-                    <div class="active-col">
+                    <div className="active-col">
                         {this.activeIndicator(songs[key].Active)}
                     </div>
-                    <div class="col-md-3 ">
-                        <button onClick={() => this.filterSong({key}, "in")}  type="button" class="btn btn-success">
-                    		<i class="fa fa-plus" aria-hidden="true"></i>
+                    <div className="col-md-3 ">
+                        <button onClick={() => this.filterSong({key}, "in")}  type="button" className="btn btn-success">
+                    		<i className="fa fa-plus" aria-hidden="true"></i>
                     	</button>
                     	&nbsp;
-                    	<button onClick={() => this.filterSong({key}, "out")}  type="button" class="btn btn-danger">
-                    		<i class="fa fa-minus" aria-hidden="true"></i>
+                    	<button onClick={() => this.filterSong({key}, "out")}  type="button" className="btn btn-danger">
+                    		<i className="fa fa-minus" aria-hidden="true"></i>
                     	</button>
-                    	<h1 title={songs[key].Name} class="name">{songs[key].Name}</h1>
+                    	<h1 title={songs[key].Name} className="name">{songs[key].Name}</h1>
                     </div>
 
-                    <div class="col-md-3">
-                    	<button onClick={() => this.filterArtist({key}, "in")} type="button" class="btn btn-success">
-                    		<i class="fa fa-plus" aria-hidden="true"></i>
+                    <div className="col-md-3">
+                    	<button onClick={() => this.filterArtist({key}, "in")} type="button" className="btn btn-success">
+                    		<i className="fa fa-plus" aria-hidden="true"></i>
                     	</button>
                     	&nbsp;
-                    	<button onClick={() => this.filterArtist({key}, "out")} type="button" class="btn btn-danger">
-                    		<i class="fa fa-minus" aria-hidden="true"></i>
+                    	<button onClick={() => this.filterArtist({key}, "out")} type="button" className="btn btn-danger">
+                    		<i className="fa fa-minus" aria-hidden="true"></i>
                     	</button>
-                    	<h1 title={songs[key].Artist} class="artist">{songs[key].Artist}</h1>
+                    	<h1 title={songs[key].Artist} className="artist">{songs[key].Artist}</h1>
                     </div>
 
-                    <div class="col-md-3">
-                    	<button onClick={() => this.filterAlbum({key}, "in")} type="button" class="btn btn-success">
-                    		<i class="fa fa-plus" aria-hidden="true"></i>
+                    <div className="col-md-3">
+                    	<button onClick={() => this.filterAlbum({key}, "in")} type="button" className="btn btn-success">
+                    		<i className="fa fa-plus" aria-hidden="true"></i>
                     	</button>
                     	&nbsp;
-                    	<button onClick={() => this.filterAlbum({key}, "out")} type="button" class="btn btn-danger">
-                    		<i class="fa fa-minus" aria-hidden="true"></i>
+                    	<button onClick={() => this.filterAlbum({key}, "out")} type="button" className="btn btn-danger">
+                    		<i className="fa fa-minus" aria-hidden="true"></i>
                     	</button>
-                    	<h1 title={songs[key].Album} class="album">{songs[key].Album}</h1>
+                    	<h1 title={songs[key].Album} className="album">{songs[key].Album}</h1>
                     </div>
 
 
-                    <div class="col-md-1 tempo-item">
-                        <h1 title={songs[key].Album} class="album">{Math.round(songs[key].Tempo)} bpm</h1>
+                    <div className="col-md-1 tempo-item">
+                        <h1 title={songs[key].Album} className="album">{Math.round(songs[key].Tempo)} bpm</h1>
                     </div>
 
                     <div clas="col-md-1">
@@ -335,22 +369,22 @@ class App extends Component {
         if (energyLevel < 0.33) {
             return (
                 <div>
-                    <i class="fa fa-circle energy-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle energy-icon" aria-hidden="true"></i>
                 </div>);
         }
         else if (energyLevel > 0.33 && energyLevel < 0.66) {
             return (
                 <div>
-                    <i class="fa fa-circle energy-icon" aria-hidden="true"></i>
-                    <i class="fa fa-circle energy-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle energy-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle energy-icon" aria-hidden="true"></i>
                 </div>);
         }
         else {
             return (
                 <div>
-                    <i class="fa fa-circle energy-icon" aria-hidden="true"></i>
-                    <i class="fa fa-circle energy-icon" aria-hidden="true"></i>
-                    <i class="fa fa-circle energy-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle energy-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle energy-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle energy-icon" aria-hidden="true"></i>
                 </div>);
         }
     }
@@ -359,13 +393,13 @@ class App extends Component {
         if (!active) {
             return (
                 <div>
-                    <i class="fa fa-circle active-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle active-icon" aria-hidden="true"></i>
                 </div>);
         }
         else {
             return (
                 <div>
-                    <i class="fa fa-circle inactive-icon" aria-hidden="true"></i>
+                    <i className="fa fa-circle inactive-icon" aria-hidden="true"></i>
                 </div>);
         }
     }
@@ -375,19 +409,19 @@ class App extends Component {
             return
         }
         return (
-            <ul class="song-items">
+            <ul className="song-items">
                 <li className="title-item col-md-12 song-item">
-                    <h1 class="active-col"></h1>
+                    <h1 className="active-col"></h1>
 
-                    <h1 class="active-col" onClick={() => this.sortSongs("Active")}><i class="fa fa-sort" aria-hidden="true"></i></h1>
-                    <h1 class="name col-md-3" onClick={() => this.sortSongs("Name")}>Title <i class="fa fa-sort" aria-hidden="true"></i></h1>
+                    <h1 className="active-col" onClick={() => this.sortSongs("Active")}><i className="fa fa-sort" aria-hidden="true"></i></h1>
+                    <h1 className="name col-md-3" onClick={() => this.sortSongs("Name")}>Title <i className="fa fa-sort" aria-hidden="true"></i></h1>
 
-                    <h1 class="artist col-md-3" onClick={() => this.sortSongs("Artist")}>Artist <i class="fa fa-sort" aria-hidden="true"></i></h1>
+                    <h1 className="artist col-md-3" onClick={() => this.sortSongs("Artist")}>Artist <i className="fa fa-sort" aria-hidden="true"></i></h1>
 
-                    <h1 class="album col-md-3" onClick={() => this.sortSongs("Album")}>Album <i class="fa fa-sort" aria-hidden="true"></i></h1>
+                    <h1 className="album col-md-3" onClick={() => this.sortSongs("Album")}>Album <i className="fa fa-sort" aria-hidden="true"></i></h1>
 
-                    <h1 class="tempo col-md-1" onClick={() => this.sortSongs("Tempo")}>Tempo <i class="fa fa-sort" aria-hidden="true"></i></h1>
-                    <h1 class="energy col-md-1" onClick={() => this.sortSongs("Energy")}>Energy <i class="fa fa-sort" aria-hidden="true"></i></h1>
+                    <h1 className="tempo col-md-1" onClick={() => this.sortSongs("Tempo")}>Tempo <i className="fa fa-sort" aria-hidden="true"></i></h1>
+                    <h1 className="energy col-md-1" onClick={() => this.sortSongs("Energy")}>Energy <i className="fa fa-sort" aria-hidden="true"></i></h1>
 
                 </li>
                 {this.state.songList}
@@ -412,11 +446,11 @@ class App extends Component {
                 It contains <span className="bold-text"> {countActive} songs </span>
                 <br></br>
                 <br></br>
-            <button onClick={() => this.createPlaylist()} type="button" class="btn btn-success">
+            <button onClick={() => this.createPlaylist()} type="button" className="btn btn-success">
                 Confirm
             </button>
             &nbsp;
-            <button onClick={() => this.cancelCreatePlaylist()} type="button" class="btn btn-danger">
+            <button onClick={() => this.cancelCreatePlaylist()} type="button" className="btn btn-danger">
                 Cancel
             </button>
             </div>

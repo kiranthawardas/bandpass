@@ -67,8 +67,9 @@
   left:50%;
   margin-right:-50%;
   height:100px;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -30%);
 }
+
 
 .App-intro > a > button {
     height:100%;
@@ -86,6 +87,16 @@
 
 .playlist-input > button {
     background-color:#17a2b8 !important;
+}
+
+.login-button {
+    position: absolute;
+    padding-left: 25px !important;
+    padding-right: 20px !important;
+    height: 100%;
+    top: 0;
+    border-radius: 10px 0px 0px 10px !important;
+    right: 0;
 }
 
 .reselect-playlist {
@@ -318,6 +329,30 @@
 
 .playlist-item > div,h1 {
     padding:0px !important;
+}
+
+.welcome-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.welcome-screen h1 {
+    margin-bottom:10px !important;
+}
+
+.welcome-screen  button {
+    transform: translate(0%, -7%);
+    height:1.75rem;
+}
+.welcome-screen  button i {
+    transform: translate(0%, -25%);
+}
+.welcome-screen  .submit-button {
+        background-color:#17a2b8 !important;
+}
+.welcome-screen  .submit-button p {
+        transform: translate(0%, -15%);
 }
 
 @keyframes App-logo-spin {
