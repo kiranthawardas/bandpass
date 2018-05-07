@@ -363,6 +363,9 @@
 .welcome-screen  .submit-button p {
         transform: translate(0%, -15%);
 }
+.welcome-screen a {
+    color:#17a2b8 !important;
+}
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }

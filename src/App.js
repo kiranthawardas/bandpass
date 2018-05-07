@@ -124,7 +124,7 @@ class App extends Component {
             return (
                 <div className="welcome-screen">
                     <h1><b>Filter your spotify playlists</b></h1>
-                    <h3>Log into spotify and select an existing playlist</h3>
+                    <h3><a href={authlink}Log into spotify</a> and select an existing playlist</h3>
                     <h3>
                         Filter your songs using the
                         &nbsp;
